@@ -225,7 +225,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding.Test
             };
 
             // Act
-            var boundCollection = await binder.BindSimpleCollection(context, rawValue: new object[0], culture: null);
+            var boundCollection = await binder.BindSimpleCollection(context, new string[0], culture: null);
 
             // Assert
             Assert.NotNull(boundCollection.Model);
@@ -405,7 +405,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding.Test
             var modelBinder = new CollectionModelBinder<int>();
 
             // Act
-            var boundCollection = await modelBinder.BindSimpleCollection(bindingContext, new int[1], culture);
+            var boundCollection = await modelBinder.BindSimpleCollection(bindingContext, new string[] { "0" }, culture);
 
             // Assert
             Assert.Equal(new[] { 42 }, boundCollection.Model.ToArray());
@@ -442,11 +442,11 @@ namespace Microsoft.AspNet.Mvc.ModelBinding.Test
                 .Returns(async (ModelBindingContext mbc) =>
                 {
                     var value = await mbc.ValueProvider.GetValueAsync(mbc.ModelName);
-                    if (value != null)
+                    if (value != ValueProviderResult.None)
                     {
-                        var model = value.ConvertTo(mbc.ModelType);
+                        var model = ModelBindingConvert.Convert((string)value, mbc.ModelType);
                         var modelValidationNode = new ModelValidationNode(mbc.ModelName, mbc.ModelMetadata, model);
-                        return new ModelBindingResult(model, mbc.ModelName, true, modelValidationNode);
+                        return new ModelBindingResult(model, mbc.ModelName, model != null, modelValidationNode);
                     }
 
                     return null;

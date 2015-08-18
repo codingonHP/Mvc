@@ -109,8 +109,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.Equal("prefix.Address.Header", entry.Key);
             Assert.Empty(entry.Value.Errors);
             Assert.Equal(ModelValidationState.Valid, entry.Value.ValidationState);
-            Assert.Equal("someValue", entry.Value.Value.AttemptedValue);
-            Assert.Equal("someValue", entry.Value.Value.RawValue);
+            Assert.Equal("someValue", entry.Value.OriginalValue);
+            Assert.Equal("someValue", entry.Value.Value);
         }
 
         // The scenario is interesting as we to bind the top level model we fallback to empty prefix,
@@ -152,8 +152,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.Equal("Address.Header", entry.Key);
             Assert.Empty(entry.Value.Errors);
             Assert.Equal(ModelValidationState.Valid, entry.Value.ValidationState);
-            Assert.Equal("someValue", entry.Value.Value.AttemptedValue);
-            Assert.Equal("someValue", entry.Value.Value.RawValue);
+            Assert.Equal("someValue", entry.Value.OriginalValue);
+            Assert.Equal("someValue", entry.Value.Value);
         }
 
         [Theory]
@@ -204,8 +204,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.Equal("CustomParameter", entry.Key);
             Assert.Empty(entry.Value.Errors);
             Assert.Equal(ModelValidationState.Valid, entry.Value.ValidationState);
-            Assert.Equal(value, entry.Value.Value.AttemptedValue);
-            Assert.Equal(expectedValue, entry.Value.Value.RawValue);
+            Assert.Equal(value, entry.Value.OriginalValue);
+            Assert.Equal(expectedValue, entry.Value.Value);
         }
     }
 }

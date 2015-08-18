@@ -874,7 +874,8 @@ namespace Microsoft.AspNet.Mvc.Rendering
         {
             return new ModelState
             {
-                Value = new ValueProviderResult(value, value, CultureInfo.InvariantCulture)
+                Value = value,
+                OriginalValue = value,
             };
         }
 

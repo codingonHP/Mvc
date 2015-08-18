@@ -36,8 +36,8 @@ namespace Microsoft.AspNet.Mvc.ModelBinding.Test
 
             var modelState = Assert.Single(bindingContext.ModelState);
             Assert.Equal("foo", modelState.Key);
-            Assert.NotNull(modelState.Value.Value);
-            Assert.Equal(value, modelState.Value.Value.RawValue);
+            Assert.Null(modelState.Value.Value);
+            Assert.Equal(string.Empty, modelState.Value.OriginalValue);
         }
 
         [Fact]

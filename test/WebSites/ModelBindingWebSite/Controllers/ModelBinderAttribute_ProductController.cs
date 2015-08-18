@@ -99,7 +99,7 @@ namespace ModelBindingWebSite.Controllers
                         bindingContext.ModelName + "." + "productId";
 
                     var value = await bindingContext.ValueProvider.GetValueAsync(key);
-                    model.ProductId = (int)value.ConvertTo(typeof(int));
+                    model.ProductId = ModelBindingConvert.Convert<int>((string)value);
 
                     var validationNode =
                         new ModelValidationNode(bindingContext.ModelName, bindingContext.ModelMetadata, value);

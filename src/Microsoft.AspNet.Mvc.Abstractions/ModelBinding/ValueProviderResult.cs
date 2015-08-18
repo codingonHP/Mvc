@@ -2,12 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections;
-using System.ComponentModel;
 using System.Globalization;
-using System.Reflection;
-using System.Runtime.ExceptionServices;
-using Microsoft.AspNet.Mvc.Abstractions;
 using Microsoft.Framework.Internal;
 
 namespace Microsoft.AspNet.Mvc.ModelBinding
@@ -15,215 +10,115 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
     /// <summary>
     /// Result of an <see cref="IValueProvider.GetValueAsync"/> operation.
     /// </summary>
-    public class ValueProviderResult
+    public struct ValueProviderResult : IEquatable<ValueProviderResult>
     {
         private static readonly CultureInfo _staticCulture = CultureInfo.InvariantCulture;
 
-        /// <summary>
-        /// Instantiates a new instance of the <see cref="ValueProviderResult"/> class with given
-        /// <paramref name="rawValue"/>. Initializes <see cref="Culture"/> to
-        /// <see cref="CultureInfo.InvariantCulture"/>.
-        /// </summary>
-        /// <param name="rawValue">The <see cref="RawValue"/> value of the new instance.</param>
-        public ValueProviderResult(object rawValue)
-            : this(rawValue, attemptedValue: null, culture: _staticCulture)
+        public static ValueProviderResult None = new ValueProviderResult();
+
+        public ValueProviderResult([NotNull] string value)
         {
+            Values = new string[] { value };
+            Culture = _staticCulture;
         }
 
-        /// <summary>
-        /// Instantiates a new instance of the <see cref="ValueProviderResult"/> class with given
-        /// <paramref name="rawValue"/>, <paramref name="attemptedValue"/>, and <paramref name="culture"/>.
-        /// </summary>
-        /// <param name="rawValue">The <see cref="RawValue"/> value of the new instance.</param>
-        /// <param name="attemptedValue">The <see cref="AttemptedValue"/> value of the new instance.</param>
-        /// <param name="culture">The <see cref="Culture"/> value of the new instance.</param>
-        public ValueProviderResult(object rawValue, string attemptedValue, CultureInfo culture)
+        public ValueProviderResult([NotNull] string value, [NotNull] CultureInfo culture)
         {
-            RawValue = rawValue;
-            AttemptedValue = attemptedValue;
-            Culture = culture ?? _staticCulture;
+            Values = new string[] { value };
+            Culture = culture;
         }
 
-        /// <summary>
-        /// <see cref="string"/> conversion of <see cref="RawValue"/>.
-        /// </summary>
-        /// <remarks>
-        /// Used in helpers that generate <c>&lt;textarea&gt;</c> elements as well as some error messages.
-        /// </remarks>
-        public string AttemptedValue { get; }
-
-        /// <summary>
-        /// <see cref="CultureInfo"/> to use in <see cref="ConvertTo(Type)"/> or
-        /// <see cref="ConvertTo(Type, CultureInfo)"/> if passed <see cref="CultureInfo"/> is <c>null</c>.
-        /// </summary>
-        public CultureInfo Culture { get; }
-
-        /// <summary>
-        /// The provided <see cref="object"/>.
-        /// </summary>
-        public object RawValue { get; }
-
-        /// <summary>
-        /// Converts <see cref="RawValue"/> to the given <paramref name="type"/>. Uses <see cref="Culture"/> for
-        /// <see cref="TypeConverter"/> operations.
-        /// </summary>
-        /// <param name="type">The target <see cref="Type"/> of the conversion.</param>
-        /// <returns>
-        /// <see cref="RawValue"/> converted to the given <paramref name="type"/>. <c>null</c> if the conversion fails.
-        /// </returns>
-        public object ConvertTo(Type type)
+        public ValueProviderResult([NotNull] string[] values)
         {
-            return ConvertTo(type, culture: null);
+            Values = values;
+            Culture = _staticCulture;
         }
 
-        /// <summary>
-        /// Converts <see cref="RawValue"/> to the given <paramref name="type"/> using the given
-        /// <paramref name="culture"/>.
-        /// </summary>
-        /// <param name="type">The target <see cref="Type"/> of the conversion.</param>
-        /// <param name="culture">
-        /// The <see cref="CultureInfo"/> to use for <see cref="TypeConverter"/> operations. Uses
-        /// <see cref="Culture"/> if this parameter is <c>null</c>.
-        /// </param>
-        /// <returns>
-        /// <see cref="RawValue"/> converted to the given <paramref name="type"/> using the given
-        /// <paramref name="culture"/>. <c>null</c> if the conversion fails.
-        /// </returns>
-        public virtual object ConvertTo([NotNull] Type type, CultureInfo culture)
+        public ValueProviderResult([NotNull] string[] values, [NotNull] CultureInfo culture)
         {
-            var value = RawValue;
-            if (value == null)
+            Values = values;
+            Culture = culture;
+        }
+
+        public CultureInfo Culture { get; private set; }
+
+        public string[] Values { get; private set; }
+
+        public int Length
+        {
+            get
             {
-                // treat null route parameters as though they were the default value for the type
-                return type.GetTypeInfo().IsValueType ? Activator.CreateInstance(type) :
-                                                        null;
+                return Values == null ? 0 : Values.Length;
             }
-
-            if (value.GetType().IsAssignableFrom(type))
-            {
-                return value;
-            }
-
-            var cultureToUse = culture ?? Culture;
-            return UnwrapPossibleArrayType(cultureToUse, value, type);
         }
 
-        private object UnwrapPossibleArrayType(CultureInfo culture, object value, Type destinationType)
+        public override bool Equals(object obj)
         {
-            // array conversion results in four cases, as below
-            var valueAsArray = value as Array;
-            if (destinationType.IsArray)
+            var other = obj as ValueProviderResult?;
+            return other.HasValue ? Equals(other.Value) : false;
+        }
+
+        public bool Equals(ValueProviderResult other)
+        {
+            if (Values == null && other.Values == null)
             {
-                var destinationElementType = destinationType.GetElementType();
-                if (valueAsArray != null)
+                return true;
+            }
+            else if (Values == null ^ other.Values == null)
+            {
+                return false;
+            }
+            else if (Values.Length != other.Values.Length)
+            {
+                return false;
+            }
+            else
+            {
+                for (var i = 0; i < Values.Length; i++)
                 {
-                    // case 1: both destination + source type are arrays, so convert each element
-                    var converted = (IList)Array.CreateInstance(destinationElementType, valueAsArray.Length);
-                    for (var i = 0; i < valueAsArray.Length; i++)
+                    if (!string.Equals(Values[i], other.Values[i], StringComparison.Ordinal))
                     {
-                        converted[i] = ConvertSimpleType(culture, valueAsArray.GetValue(i), destinationElementType);
+                        return false;
                     }
-                    return converted;
                 }
-                else
-                {
-                    // case 2: destination type is array but source is single element, so wrap element in
-                    // array + convert
-                    var element = ConvertSimpleType(culture, value, destinationElementType);
-                    var converted = (IList)Array.CreateInstance(destinationElementType, 1);
-                    converted[0] = element;
-                    return converted;
-                }
+                return true;
             }
-            else if (valueAsArray != null)
-            {
-                // case 3: destination type is single element but source is array, so extract first element + convert
-                if (valueAsArray.Length > 0)
-                {
-                    value = valueAsArray.GetValue(0);
-                    return ConvertSimpleType(culture, value, destinationType);
-                }
-                else
-                {
-                    // case 3(a): source is empty array, so can't perform conversion
-                    return null;
-                }
-            }
-
-            // case 4: both destination + source type are single elements, so convert
-            return ConvertSimpleType(culture, value, destinationType);
         }
 
-        private object ConvertSimpleType(CultureInfo culture, object value, Type destinationType)
+        public override int GetHashCode()
         {
-            if (value == null || value.GetType().IsAssignableFrom(destinationType))
-            {
-                return value;
-            }
+            return ((string)this).GetHashCode();
+        }
 
-            // In case of a Nullable object, we try again with its underlying type.
-            destinationType = UnwrapNullableType(destinationType);
+        public override string ToString()
+        {
+            return (string)this;
+        }
 
-            // if this is a user-input value but the user didn't type anything, return no value
-            var valueAsString = value as string;
-            if (valueAsString != null && string.IsNullOrWhiteSpace(valueAsString))
+        public static explicit operator string (ValueProviderResult result)
+        {
+            if (result.Length == 0)
             {
                 return null;
             }
-
-            var converter = TypeDescriptor.GetConverter(destinationType);
-            var canConvertFrom = converter.CanConvertFrom(value.GetType());
-            if (!canConvertFrom)
+            else if (result.Length == 1)
             {
-                converter = TypeDescriptor.GetConverter(value.GetType());
+                return result.Values[0];
             }
-            if (!(canConvertFrom || converter.CanConvertTo(destinationType)))
+            else
             {
-                // EnumConverter cannot convert integer, so we verify manually
-                if (destinationType.GetTypeInfo().IsEnum &&
-                    (value is int ||
-                    value is uint ||
-                    value is long ||
-                    value is ulong ||
-                    value is short ||
-                    value is ushort ||
-                    value is byte ||
-                    value is sbyte))
-                {
-                    return Enum.ToObject(destinationType, value);
-                }
-
-                throw new InvalidOperationException(
-                    Resources.FormatValueProviderResult_NoConverterExists(value.GetType(), destinationType));
-            }
-
-            try
-            {
-                return canConvertFrom
-                           ? converter.ConvertFrom(null, culture, value)
-                           : converter.ConvertTo(null, culture, value, destinationType);
-            }
-            catch (Exception ex)
-            {
-                if (ex is FormatException)
-                {
-                    throw ex;
-                }
-                else
-                {
-                    // TypeConverter throws System.Exception wrapping the FormatException,
-                    // so we throw the inner exception.
-                    ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
-
-                    // this code is never reached because the previous line is throwing;
-                    throw;
-                }
+                return string.Join(",", result.Values);
             }
         }
 
-        private static Type UnwrapNullableType(Type destinationType)
+        public static bool operator ==(ValueProviderResult x, ValueProviderResult y)
         {
-            return Nullable.GetUnderlyingType(destinationType) ?? destinationType;
+            return x.Equals(y);
+        }
+
+        public static bool operator !=(ValueProviderResult x, ValueProviderResult y)
+        {
+            return !x.Equals(y);
         }
     }
 }

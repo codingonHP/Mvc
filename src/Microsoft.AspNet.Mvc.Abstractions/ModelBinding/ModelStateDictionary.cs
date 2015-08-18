@@ -213,15 +213,16 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
                 // Convert FormatExceptions to Invalid value messages.
                 ModelState modelState;
                 TryGetValue(key, out modelState);
+
                 string errorMessage;
-                if (modelState == null)
+                if (modelState == null || modelState.OriginalValue == null)
                 {
                     errorMessage = Resources.FormatModelError_InvalidValue_GenericMessage(key);
                 }
                 else
                 {
                     errorMessage = Resources.FormatModelError_InvalidValue_MessageWithModelValue(
-                        modelState.Value.AttemptedValue,
+                        modelState.OriginalValue,
                         key);
                 }
 
@@ -364,9 +365,17 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
         /// </summary>
         /// <param name="key">The key for the <see cref="ModelState"/> entry.</param>
         /// <param name="value">The value to assign.</param>
-        public void SetModelValue([NotNull] string key, [NotNull] ValueProviderResult value)
+        /// <param name="originalValue">The original value.</param>
+        public void SetModelValue([NotNull] string key, [NotNull] object value, string originalValue)
         {
-            GetModelStateForKey(key).Value = value;
+            var modelState = GetModelStateForKey(key);
+            modelState.Value = value;
+            modelState.OriginalValue = originalValue;
+        }
+
+        public void SetModelValue([NotNull] string key, [NotNull] object value, ValueProviderResult valueProviderResult)
+        {
+            SetModelValue(key, value, (string)valueProviderResult);
         }
 
         /// <summary>

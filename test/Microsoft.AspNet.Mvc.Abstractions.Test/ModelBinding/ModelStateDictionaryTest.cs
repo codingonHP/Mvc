@@ -18,7 +18,6 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             // Arrange
             var modelState = new ModelState
             {
-                Value = GetValueProviderResult("value"),
                 ValidationState = validationState
             };
 
@@ -40,7 +39,6 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             // Arrange
             var modelState = new ModelState
             {
-                Value = GetValueProviderResult("value"),
                 ValidationState = ModelValidationState.Valid
             };
 
@@ -63,7 +61,6 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             // Arrange
             var modelState = new ModelState
             {
-                Value = GetValueProviderResult("value"),
                 ValidationState = ModelValidationState.Invalid
             };
 
@@ -89,7 +86,6 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             // Arrange
             var modelState = new ModelState
             {
-                Value = GetValueProviderResult("value"),
                 ValidationState = validationState
             };
 
@@ -126,7 +122,6 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             // Arrange
             var modelState = new ModelState
             {
-                Value = GetValueProviderResult("value"),
                 ValidationState = ModelValidationState.Invalid
             };
 
@@ -148,10 +143,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
         public void CopyConstructor_CopiesModelStateData()
         {
             // Arrange
-            var modelState = new ModelState
-            {
-                Value = GetValueProviderResult("value")
-            };
+            var modelState = new ModelState();
             var source = new ModelStateDictionary
             {
                 { "key",  modelState }
@@ -211,7 +203,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             // Arrange
             var oldDictionary = new ModelStateDictionary()
             {
-                { "foo", new ModelState() { Value = GetValueProviderResult("bar", "bar") } }
+                { "foo", new ModelState() { Value = "bar", } }
             };
 
             // Act
@@ -219,7 +211,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
 
             // Assert
             Assert.Single(newDictionary);
-            Assert.Equal("bar", newDictionary["foo"].Value.ConvertTo(typeof(string)));
+            Assert.Equal("bar", newDictionary["foo"].Value);
         }
 
         [Fact]
@@ -238,7 +230,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
         [Fact]
         public void GetValidationState_ReturnsValidationStateForKey_IgnoresChildren()
         {
-             // Arrange
+            // Arrange
             var msd = new ModelStateDictionary();
             msd.AddModelError("foo.bar", "error text");
 
@@ -277,7 +269,6 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             // Arrange
             var validState = new ModelState
             {
-                Value = new ValueProviderResult(rawValue: null),
                 ValidationState = ModelValidationState.Valid
             };
             var msd = new ModelStateDictionary
@@ -316,7 +307,6 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             // Arrange
             var validState = new ModelState
             {
-                Value = new ValueProviderResult(rawValue: null),
                 ValidationState = ModelValidationState.Valid
             };
             var msd = new ModelStateDictionary
@@ -337,12 +327,10 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             // Arrange
             var errorState = new ModelState
             {
-                Value = GetValueProviderResult("quux", "quux"),
                 ValidationState = ModelValidationState.Invalid
             };
             var validState = new ModelState
             {
-                Value = GetValueProviderResult("bar", "bar"),
                 ValidationState = ModelValidationState.Valid
             };
             errorState.Errors.Add("some error");
@@ -370,13 +358,11 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
                 { "foo", new ModelState
                         {
                             ValidationState = ModelValidationState.Valid,
-                            Value = GetValueProviderResult("bar", "bar")
                         }
                 },
                 { "baz", new ModelState
                          {
                              ValidationState = ModelValidationState.Skipped,
-                             Value = GetValueProviderResult("quux", "bar")
                          }
                 }
             };
@@ -396,12 +382,10 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             // Arrange
             var errorState = new ModelState
             {
-                Value = GetValueProviderResult("quux", "quux"),
                 ValidationState = ModelValidationState.Invalid
             };
             var validState = new ModelState
             {
-                Value = GetValueProviderResult("bar", "bar"),
                 ValidationState = ModelValidationState.Valid
             };
             errorState.Errors.Add("some error");
@@ -409,7 +393,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             {
                 { "foo", validState },
                 { "baz", errorState },
-                { "qux", new ModelState { Value = GetValueProviderResult() }}
+                { "qux", new ModelState { Value = "some value" }}
             };
 
             // Act
@@ -457,14 +441,14 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             var dictionary = new ModelStateDictionary();
 
             // Act
-            dictionary.SetModelValue("some key", GetValueProviderResult("some value", "some value"));
+            dictionary.SetModelValue("some key", "some value", "some value");
 
             // Assert
             Assert.Single(dictionary);
             var modelState = dictionary["some key"];
 
             Assert.Empty(modelState.Errors);
-            Assert.Equal("some value", modelState.Value.ConvertTo(typeof(string)));
+            Assert.Equal("some value", modelState.Value);
         }
 
         [Fact]
@@ -476,7 +460,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             var ex = new Exception();
 
             // Act
-            dictionary.SetModelValue("some key", GetValueProviderResult("some value", "some value"));
+            dictionary.SetModelValue("some key", "some value", "some value");
 
             // Assert
             Assert.Single(dictionary);
@@ -484,7 +468,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
 
             Assert.Single(modelState.Errors);
             Assert.Equal("some error", modelState.Errors[0].ErrorMessage);
-            Assert.Equal("some value", modelState.Value.ConvertTo(typeof(string)));
+            Assert.Equal("some value", modelState.Value);
         }
 
         [Fact]
@@ -492,7 +476,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
         {
             // Arrange
             var dictionary = new ModelStateDictionary();
-            dictionary.SetModelValue("user.Name", GetValueProviderResult());
+            dictionary.SetModelValue("user.Name", "some value", "some value");
 
             // Act
             var validationState = dictionary.GetFieldValidationState("not-user");
@@ -507,7 +491,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             // Arrange
             var dictionary = new ModelStateDictionary();
             dictionary["user.Address"] = new ModelState { ValidationState = ModelValidationState.Valid };
-            dictionary.SetModelValue("user.Name", GetValueProviderResult());
+            dictionary.SetModelValue("user.Name", "some value", "some value");
             dictionary.AddModelError("user.Age", "Age is not a valid int");
 
             // Act
@@ -745,7 +729,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             // Arrange
             var expected = "The value 'some value' is not valid for key.";
             var dictionary = new ModelStateDictionary();
-            dictionary.SetModelValue("key", GetValueProviderResult());
+            dictionary.SetModelValue("key", "some value", "some value");
 
             // Act
             dictionary.TryAddModelError("key", new FormatException());
@@ -760,7 +744,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
         {
             // Arrange
             var dictionary = new ModelStateDictionary();
-            dictionary.SetModelValue("key", GetValueProviderResult());
+            dictionary.SetModelValue("key", "some value", "some value");
 
             // Act
             dictionary.TryAddModelError("key", new InvalidOperationException());
@@ -904,13 +888,6 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             Assert.Equal(ModelValidationState.Unvalidated, dictionary["Property3"].ValidationState);
             Assert.Equal(0, dictionary["Property4"].Errors.Count);
             Assert.Equal(ModelValidationState.Unvalidated, dictionary["Property4"].ValidationState);
-        }
-
-        private static ValueProviderResult GetValueProviderResult(object rawValue = null, string attemptedValue = null)
-        {
-            return new ValueProviderResult(rawValue ?? "some value",
-                                           attemptedValue ?? "some value",
-                                           CultureInfo.InvariantCulture);
         }
     }
 }

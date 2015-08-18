@@ -65,8 +65,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.Equal(queryStringKey, entry.Key);
             Assert.Empty(entry.Value.Errors);
             Assert.Equal(ModelValidationState.Valid, entry.Value.ValidationState);
-            Assert.Equal(value, entry.Value.Value.AttemptedValue);
-            Assert.Equal(value, entry.Value.Value.RawValue);
+            Assert.Equal(value, entry.Value.OriginalValue);
+            Assert.Equal(new byte[] { 12, 13 }, entry.Value.Value);
         }
 
         [Fact]
@@ -146,8 +146,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             var entry = Assert.Single(modelState);
             Assert.Equal("CustomParameter", entry.Key);
             Assert.Empty(entry.Value.Errors);
-            Assert.Equal(value, entry.Value.Value.AttemptedValue);
-            Assert.Equal(value, entry.Value.Value.RawValue);
+            Assert.Equal(value, entry.Value.OriginalValue);
+            Assert.Equal(new byte[] { 126, 139, 171 }, entry.Value.Value);
         }
     }
 }

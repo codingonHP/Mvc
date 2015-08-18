@@ -54,7 +54,7 @@ namespace Microsoft.AspNet.Mvc.Test
             var expectedMessage = PlatformNormalizer.NormalizeContent("The MyProperty field is required.");
             var binders = new IModelBinder[]
             {
-                new TypeConverterModelBinder(),
+                new SimpleTypeModelBinder(),
                 new MutableObjectModelBinder()
             };
 
@@ -93,7 +93,7 @@ namespace Microsoft.AspNet.Mvc.Test
             // Arrange
             var binders = new IModelBinder[]
             {
-                new TypeConverterModelBinder(),
+                new SimpleTypeModelBinder(),
                 new MutableObjectModelBinder()
             };
 
@@ -165,7 +165,7 @@ namespace Microsoft.AspNet.Mvc.Test
             // Arrange
             var binders = new IModelBinder[]
             {
-                new TypeConverterModelBinder(),
+                new SimpleTypeModelBinder(),
                 new MutableObjectModelBinder()
             };
 
@@ -252,7 +252,7 @@ namespace Microsoft.AspNet.Mvc.Test
             // Arrange
             var binders = new IModelBinder[]
             {
-                new TypeConverterModelBinder(),
+                new SimpleTypeModelBinder(),
                 new MutableObjectModelBinder()
             };
 
@@ -304,7 +304,7 @@ namespace Microsoft.AspNet.Mvc.Test
             // Arrange
             var binders = new IModelBinder[]
             {
-                new TypeConverterModelBinder(),
+                new SimpleTypeModelBinder(),
                 new MutableObjectModelBinder()
             };
 
@@ -507,7 +507,7 @@ namespace Microsoft.AspNet.Mvc.Test
             // Arrange
             var binders = new IModelBinder[]
             {
-                new TypeConverterModelBinder(),
+                new SimpleTypeModelBinder(),
                 new MutableObjectModelBinder()
             };
 
@@ -596,7 +596,7 @@ namespace Microsoft.AspNet.Mvc.Test
             // Arrange
             var binders = new IModelBinder[]
             {
-                new TypeConverterModelBinder(),
+                new SimpleTypeModelBinder(),
                 new MutableObjectModelBinder()
             };
 

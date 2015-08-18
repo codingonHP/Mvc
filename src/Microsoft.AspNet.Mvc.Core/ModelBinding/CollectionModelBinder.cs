@@ -56,31 +56,13 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             var valueProviderResult = await bindingContext.ValueProvider.GetValueAsync(bindingContext.ModelName);
 
             CollectionResult result;
-            if (valueProviderResult == null)
+            if (valueProviderResult == ValueProviderResult.None)
             {
                 result = await BindComplexCollection(bindingContext);
             }
             else
             {
-                if (valueProviderResult.RawValue == null)
-                {
-                    // Value exists but is null. Handle similarly to fallback case above. This avoids a
-                    // ModelBindingResult with IsModelSet = true but ValidationNode = null.
-                    model = bindingContext.Model ?? CreateEmptyCollection(bindingContext.ModelType);
-                    var validationNode =
-                        new ModelValidationNode(bindingContext.ModelName, bindingContext.ModelMetadata, model);
-
-                    return new ModelBindingResult(
-                        model,
-                        bindingContext.ModelName,
-                        isModelSet: true,
-                        validationNode: validationNode);
-                }
-
-                result = await BindSimpleCollection(
-                    bindingContext,
-                    valueProviderResult.RawValue,
-                    valueProviderResult.Culture);
+                result = await BindSimpleCollection(bindingContext, valueProviderResult.Values, valueProviderResult.Culture);
             }
 
             var boundCollection = result.Model;
@@ -147,7 +129,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
         // Internal for testing.
         internal async Task<CollectionResult> BindSimpleCollection(
             ModelBindingContext bindingContext,
-            object rawValue,
+            string[] values,
             CultureInfo culture)
         {
             var boundCollection = new List<TElement>();
@@ -159,8 +141,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
                 bindingContext.ModelName,
                 bindingContext.ModelMetadata,
                 boundCollection);
-            var rawValueArray = RawValueToObjectArray(rawValue);
-            foreach (var rawValueElement in rawValueArray)
+            foreach (var value in values)
             {
                 var innerBindingContext = ModelBindingContext.GetChildModelBindingContext(
                     bindingContext,
@@ -169,7 +150,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
                 innerBindingContext.ValueProvider = new CompositeValueProvider
                 {
                     // our temporary provider goes at the front of the list
-                    new ElementalValueProvider(bindingContext.ModelName, rawValueElement, culture),
+                    new ElementalValueProvider(bindingContext.ModelName, value, culture),
                     bindingContext.ValueProvider
                 };
 
@@ -183,8 +164,9 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
                     {
                         validationNode.ChildNodes.Add(result.ValidationNode);
                     }
+
+                    boundCollection.Add(ModelBindingHelper.CastOrDefault<TElement>(boundValue));
                 }
-                boundCollection.Add(ModelBindingHelper.CastOrDefault<TElement>(boundValue));
             }
 
             return new CollectionResult
@@ -364,7 +346,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             IEnumerable<string> indexNames = null;
             if (valueProviderResult != null)
             {
-                var indexes = (string[])valueProviderResult.ConvertTo(typeof(string[]));
+                var indexes = valueProviderResult.Values;
                 if (indexes != null && indexes.Length > 0)
                 {
                     indexNames = indexes;

@@ -274,10 +274,7 @@ namespace Microsoft.AspNet.Mvc.Rendering
 
             var viewContext = GetViewContext<Model>(model, metadataProvider);
             viewContext.ViewData[nameof(Model.Name)] = "ignored ViewData value";
-
-
-            var valueProviderResult = new ValueProviderResult(rawValue);
-            viewContext.ModelState.SetModelValue(nameof(Model.Name), valueProviderResult);
+            viewContext.ModelState.SetModelValue(nameof(Model.Name), rawValue, originalValue: null);
 
             // Act
             var result = htmlGenerator.GetCurrentValues(
@@ -305,11 +302,9 @@ namespace Microsoft.AspNet.Mvc.Rendering
 
             var viewContext = GetViewContext<Model>(model, metadataProvider);
             viewContext.ViewData[nameof(Model.Name)] = "ignored ViewData value";
+            viewContext.ModelState.SetModelValue(nameof(Model.Name), rawValue, originalValue: null);
 
             var modelExplorer = metadataProvider.GetModelExplorerForType(typeof(string), "ignored model value");
-
-            var valueProviderResult = new ValueProviderResult(rawValue);
-            viewContext.ModelState.SetModelValue(nameof(Model.Name), valueProviderResult);
 
             // Act
             var result = htmlGenerator.GetCurrentValues(
@@ -355,11 +350,9 @@ namespace Microsoft.AspNet.Mvc.Rendering
 
             var viewContext = GetViewContext<Model>(model, metadataProvider);
             viewContext.ViewData[nameof(Model.Name)] = "ignored ViewData value";
+            viewContext.ModelState.SetModelValue(nameof(Model.Name), rawValue, originalValue: null);
 
             var modelExplorer = metadataProvider.GetModelExplorerForType(typeof(string), rawValue);
-
-            var valueProviderResult = new ValueProviderResult(rawValue: null);
-            viewContext.ModelState.SetModelValue(nameof(Model.Name), valueProviderResult);
 
             // Act
             var result = htmlGenerator.GetCurrentValues(
@@ -385,9 +378,7 @@ namespace Microsoft.AspNet.Mvc.Rendering
 
             var viewContext = GetViewContext<Model>(model, metadataProvider);
             viewContext.ViewData[nameof(Model.Name)] = rawValue;
-
-            var valueProviderResult = new ValueProviderResult(rawValue: null);
-            viewContext.ModelState.SetModelValue(nameof(Model.Name), valueProviderResult);
+            viewContext.ModelState.SetModelValue(nameof(Model.Name), rawValue, originalValue: null);
 
             // Act
             var result = htmlGenerator.GetCurrentValues(
@@ -410,9 +401,7 @@ namespace Microsoft.AspNet.Mvc.Rendering
             var model = new Model { Name = rawValue };
 
             var viewContext = GetViewContext<Model>(model, metadataProvider);
-
-            var valueProviderResult = new ValueProviderResult(rawValue: null);
-            viewContext.ModelState.SetModelValue(nameof(Model.Name), valueProviderResult);
+            viewContext.ModelState.SetModelValue(nameof(Model.Name), rawValue, originalValue: null);
 
             // Act
             var result = htmlGenerator.GetCurrentValues(
@@ -467,12 +456,10 @@ namespace Microsoft.AspNet.Mvc.Rendering
 
             var viewContext = GetViewContext<Model>(model, metadataProvider);
             viewContext.ViewData[nameof(Model.Collection)] = new[] { "ignored ViewData value" };
+            viewContext.ModelState.SetModelValue(nameof(Model.Collection), rawValue, originalValue: null);
 
             var modelExplorer =
                 metadataProvider.GetModelExplorerForType(typeof(List<string>), new List<string>(rawValue));
-
-            var valueProviderResult = new ValueProviderResult(rawValue: null);
-            viewContext.ModelState.SetModelValue(nameof(Model.Collection), valueProviderResult);
 
             // Act
             var result = htmlGenerator.GetCurrentValues(
@@ -498,9 +485,7 @@ namespace Microsoft.AspNet.Mvc.Rendering
 
             var viewContext = GetViewContext<Model>(model, metadataProvider);
             viewContext.ViewData[nameof(Model.Collection)] = rawValue;
-
-            var valueProviderResult = new ValueProviderResult(rawValue: null);
-            viewContext.ModelState.SetModelValue(nameof(Model.Collection), valueProviderResult);
+            viewContext.ModelState.SetModelValue(nameof(Model.Collection), rawValue, originalValue: null);
 
             // Act
             var result = htmlGenerator.GetCurrentValues(
@@ -526,9 +511,7 @@ namespace Microsoft.AspNet.Mvc.Rendering
             model.Collection.AddRange(rawValue);
 
             var viewContext = GetViewContext<Model>(model, metadataProvider);
-
-            var valueProviderResult = new ValueProviderResult(rawValue: null);
-            viewContext.ModelState.SetModelValue(nameof(Model.Collection), valueProviderResult);
+            viewContext.ModelState.SetModelValue(nameof(Model.Collection), rawValue, originalValue: null);
 
             // Act
             var result = htmlGenerator.GetCurrentValues(
@@ -637,9 +620,7 @@ namespace Microsoft.AspNet.Mvc.Rendering
             var metadataProvider = TestModelMetadataProvider.CreateDefaultProvider();
             var htmlGenerator = GetGenerator(metadataProvider);
             var viewContext = GetViewContext<Model>(model: null, metadataProvider: metadataProvider);
-
-            var valueProviderResult = new ValueProviderResult(rawValue);
-            viewContext.ModelState.SetModelValue(propertyName, valueProviderResult);
+            viewContext.ModelState.SetModelValue(propertyName, rawValue, originalValue: null);
 
             // Act
             var result = htmlGenerator.GetCurrentValues(

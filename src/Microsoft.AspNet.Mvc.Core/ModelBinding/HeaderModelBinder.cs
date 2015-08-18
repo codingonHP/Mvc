@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
-using System.Globalization;
 #if DNXCORE50
 using System.Reflection;
 #endif
@@ -61,9 +60,8 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
                     bindingContext.ModelMetadata,
                     model);
 
-                var attemptedValue = (model as string) ?? request.Headers.Get(headerName);
-                var valueProviderResult = new ValueProviderResult(model, attemptedValue, CultureInfo.InvariantCulture);
-                bindingContext.ModelState.SetModelValue(bindingContext.ModelName, valueProviderResult);
+                var originalValue = (model as string) ?? request.Headers.Get(headerName);
+                bindingContext.ModelState.SetModelValue(bindingContext.ModelName, model, originalValue);
             }
 
             return Task.FromResult(

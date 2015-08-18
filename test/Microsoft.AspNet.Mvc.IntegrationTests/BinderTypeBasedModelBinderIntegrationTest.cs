@@ -294,11 +294,9 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
                 var address = new Address() { Street = "SomeStreet" };
 
                 bindingContext.ModelState.SetModelValue(
-                  ModelNames.CreatePropertyModelName(bindingContext.ModelName, "Street"),
-                  new ValueProviderResult(
-                      address.Street,
-                      address.Street,
-                      CultureInfo.CurrentCulture));
+                    ModelNames.CreatePropertyModelName(bindingContext.ModelName, "Street"),
+                    address.Street,
+                    address.Street);
 
                 var validationNode = new ModelValidationNode(
                   bindingContext.ModelName,
@@ -319,7 +317,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
                 var model = "Success";
                 bindingContext.ModelState.SetModelValue(
                     bindingContext.ModelName,
-                    new ValueProviderResult(model, model, CultureInfo.CurrentCulture));
+                    model,
+                    model);
 
                 var modelValidationNode = new ModelValidationNode(
                     bindingContext.ModelName,

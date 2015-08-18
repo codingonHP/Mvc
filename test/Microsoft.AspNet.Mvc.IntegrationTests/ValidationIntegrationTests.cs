@@ -53,8 +53,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.True(modelState.IsValid);
 
             var entry = Assert.Single(modelState, e => e.Key == "parameter.CustomerName").Value;
-            Assert.Equal("bill", entry.Value.AttemptedValue);
-            Assert.Equal("bill", entry.Value.RawValue);
+            Assert.Equal("bill", entry.OriginalValue);
+            Assert.Equal("bill", entry.Value);
             Assert.Empty(entry.Errors);
         }
 
@@ -143,8 +143,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.True(modelState.IsValid);
 
             var entry = Assert.Single(modelState, e => e.Key == "parameter.Customer.Name").Value;
-            Assert.Equal("bill", entry.Value.AttemptedValue);
-            Assert.Equal("bill", entry.Value.RawValue);
+            Assert.Equal("bill", entry.OriginalValue);
+            Assert.Equal("bill", entry.Value);
             Assert.Empty(entry.Errors);
         }
 
@@ -235,8 +235,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.True(modelState.IsValid);
 
             var entry = Assert.Single(modelState, e => e.Key == "parameter.Customer.Name").Value;
-            Assert.Equal("bill", entry.Value.AttemptedValue);
-            Assert.Equal("bill", entry.Value.RawValue);
+            Assert.Equal("bill", entry.OriginalValue);
+            Assert.Equal("bill", entry.Value);
             Assert.Empty(entry.Errors);
         }
 
@@ -328,8 +328,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.True(modelState.IsValid);
 
             var entry = Assert.Single(modelState, e => e.Key == "Items[0].ItemId").Value;
-            Assert.Equal("17", entry.Value.AttemptedValue);
-            Assert.Equal("17", entry.Value.RawValue);
+            Assert.Equal("17", entry.OriginalValue);
+            Assert.Equal(17, entry.Value);
             Assert.Empty(entry.Errors);
         }
 
@@ -415,8 +415,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.True(modelState.IsValid);
 
             var entry = Assert.Single(modelState, e => e.Key == "parameter[0].ProductId").Value;
-            Assert.Equal("17", entry.Value.AttemptedValue);
-            Assert.Equal("17", entry.Value.RawValue);
+            Assert.Equal("17", entry.OriginalValue);
+            Assert.Equal(17, entry.Value);
             Assert.Empty(entry.Errors);
         }
 
@@ -502,8 +502,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.True(modelState.IsValid);
 
             var entry = Assert.Single(modelState, e => e.Key == "parameter.Name").Value;
-            Assert.Equal("bill", entry.Value.AttemptedValue);
-            Assert.Equal("bill", entry.Value.RawValue);
+            Assert.Equal("bill", entry.OriginalValue);
+            Assert.Equal("bill", entry.Value);
             Assert.Empty(entry.Errors);
         }
 
@@ -540,8 +540,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.False(modelState.IsValid);
 
             var entry = Assert.Single(modelState, e => e.Key == "parameter.Name").Value;
-            Assert.Equal("billybob", entry.Value.AttemptedValue);
-            Assert.Equal("billybob", entry.Value.RawValue);
+            Assert.Equal("billybob", entry.OriginalValue);
+            Assert.Equal("billybob", entry.Value);
 
             var error = Assert.Single(entry.Errors);
             Assert.Equal("Too Long.", error.ErrorMessage);
@@ -592,8 +592,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.True(modelState.IsValid);
 
             var entry = Assert.Single(modelState, e => e.Key == "parameter.Customer.Name").Value;
-            Assert.Equal("bill", entry.Value.AttemptedValue);
-            Assert.Equal("bill", entry.Value.RawValue);
+            Assert.Equal("bill", entry.OriginalValue);
+            Assert.Equal("bill", entry.Value);
             Assert.Empty(entry.Errors);
         }
 
@@ -630,8 +630,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.False(modelState.IsValid);
 
             var entry = Assert.Single(modelState, e => e.Key == "parameter.Customer.Name").Value;
-            Assert.Equal("billybob", entry.Value.AttemptedValue);
-            Assert.Equal("billybob", entry.Value.RawValue);
+            Assert.Equal("billybob", entry.OriginalValue);
+            Assert.Equal("billybob", entry.Value);
 
             var error = Assert.Single(entry.Errors);
             Assert.Equal("Too Long.", error.ErrorMessage);
@@ -730,8 +730,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.True(modelState.IsValid);
 
             var entry = Assert.Single(modelState, e => e.Key == "parameter.Customer.Name").Value;
-            Assert.Equal("bill", entry.Value.AttemptedValue);
-            Assert.Equal("bill", entry.Value.RawValue);
+            Assert.Equal("bill", entry.OriginalValue);
+            Assert.Equal("bill", entry.Value);
             Assert.Empty(entry.Errors);
         }
 
@@ -768,8 +768,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.False(modelState.IsValid);
 
             var entry = Assert.Single(modelState, e => e.Key == "parameter.Customer.Name").Value;
-            Assert.Equal("billybob", entry.Value.AttemptedValue);
-            Assert.Equal("billybob", entry.Value.RawValue);
+            Assert.Equal("billybob", entry.OriginalValue);
+            Assert.Equal("billybob", entry.Value);
 
             entry = Assert.Single(modelState, e => e.Key == "parameter.Customer").Value;
             Assert.Null(entry.Value);
@@ -838,8 +838,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.True(modelState.IsValid);
 
             var entry = Assert.Single(modelState, e => e.Key == "parameter.Products[0].Name").Value;
-            Assert.Equal("bill", entry.Value.AttemptedValue);
-            Assert.Equal("bill", entry.Value.RawValue);
+            Assert.Equal("bill", entry.OriginalValue);
+            Assert.Equal("bill", entry.Value);
             Assert.Empty(entry.Errors);
         }
 
@@ -876,8 +876,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.False(modelState.IsValid);
 
             var entry = Assert.Single(modelState, e => e.Key == "parameter.Products[0].Name").Value;
-            Assert.Equal("billybob", entry.Value.AttemptedValue);
-            Assert.Equal("billybob", entry.Value.RawValue);
+            Assert.Equal("billybob", entry.OriginalValue);
+            Assert.Equal("billybob", entry.Value);
 
             entry = Assert.Single(modelState, e => e.Key == "parameter.Products").Value;
             Assert.Null(entry.Value);
@@ -927,8 +927,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.True(modelState.IsValid);
 
             var entry = Assert.Single(modelState, e => e.Key == "parameter[0].Name").Value;
-            Assert.Equal("bill", entry.Value.AttemptedValue);
-            Assert.Equal("bill", entry.Value.RawValue);
+            Assert.Equal("bill", entry.OriginalValue);
+            Assert.Equal("bill", entry.Value);
             Assert.Empty(entry.Errors);
         }
 
@@ -965,8 +965,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.False(modelState.IsValid);
 
             var entry = Assert.Single(modelState, e => e.Key == "parameter[0].Name").Value;
-            Assert.Equal("billybob", entry.Value.AttemptedValue);
-            Assert.Equal("billybob", entry.Value.RawValue);
+            Assert.Equal("billybob", entry.OriginalValue);
+            Assert.Equal("billybob", entry.Value);
 
             var error = Assert.Single(entry.Errors);
             Assert.Equal("Too Long.", error.ErrorMessage);
@@ -1070,23 +1070,23 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.True(modelState.IsValid);
 
             var entry = Assert.Single(modelState, e => e.Key == "HomeAddress.Country.Name").Value;
-            Assert.Equal("US", entry.Value.AttemptedValue);
-            Assert.Equal("US", entry.Value.RawValue);
+            Assert.Equal("US", entry.OriginalValue);
+            Assert.Equal("US", entry.Value);
             Assert.Equal(ModelValidationState.Skipped, entry.ValidationState);
 
             entry = Assert.Single(modelState, e => e.Key == "ShippingAddresses[0].Zip").Value;
-            Assert.Equal("45", entry.Value.AttemptedValue);
-            Assert.Equal("45", entry.Value.RawValue);
+            Assert.Equal("45", entry.OriginalValue);
+            Assert.Equal(45, entry.Value);
             Assert.Equal(ModelValidationState.Skipped, entry.ValidationState);
 
             entry = Assert.Single(modelState, e => e.Key == "HomeAddress.Zip").Value;
-            Assert.Equal("46", entry.Value.AttemptedValue);
-            Assert.Equal("46", entry.Value.RawValue);
+            Assert.Equal("46", entry.OriginalValue);
+            Assert.Equal(46, entry.Value);
             Assert.Equal(ModelValidationState.Skipped, entry.ValidationState);
 
             entry = Assert.Single(modelState, e => e.Key == "OfficeAddress").Value;
-            Assert.Null(entry.Value.AttemptedValue);
-            var address = Assert.IsType<Address>(entry.Value.RawValue);
+            Assert.Null(entry.OriginalValue);
+            var address = Assert.IsType<Address>(entry.Value);
             Assert.Equal(47, address.Zip);
 
             // Address itself is not excluded from validation.

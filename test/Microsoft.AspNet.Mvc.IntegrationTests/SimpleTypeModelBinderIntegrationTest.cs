@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Microsoft.AspNet.Mvc.IntegrationTests
 {
-    public class TypeConverterModelBinderIntegrationTest
+    public class SimpleTypeModelBinderIntegrationTest
     {
         [Fact]
         public async Task BindProperty_WithData_WithPrefix_GetsBound()
@@ -59,8 +59,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.Equal(1, modelState.Keys.Count);
             var key = Assert.Single(modelState.Keys, k => k == "CustomParameter.Address.Zip");
             Assert.NotNull(modelState[key].Value);
-            Assert.Equal("1", modelState[key].Value.AttemptedValue);
-            Assert.Equal("1", modelState[key].Value.RawValue);
+            Assert.Equal("1", modelState[key].OriginalValue);
+            Assert.Equal("1", modelState[key].Value);
             Assert.NotNull(modelState[key].Value);
             Assert.Empty(modelState[key].Errors);
             Assert.Equal(ModelValidationState.Valid, modelState[key].ValidationState);
@@ -106,8 +106,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.Equal(1, modelState.Keys.Count);
             var key = Assert.Single(modelState.Keys, k => k == "Address.Zip");
             Assert.NotNull(modelState[key].Value);
-            Assert.Equal("1", modelState[key].Value.AttemptedValue);
-            Assert.Equal("1", modelState[key].Value.RawValue);
+            Assert.Equal("1", modelState[key].OriginalValue);
+            Assert.Equal("1", modelState[key].Value);
             Assert.NotNull(modelState[key].Value);
             Assert.Empty(modelState[key].Errors);
             Assert.Equal(ModelValidationState.Valid, modelState[key].ValidationState);
@@ -153,8 +153,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             var key = Assert.Single(modelState.Keys);
             Assert.Equal("Parameter1", key);
             Assert.NotNull(modelState[key].Value);
-            Assert.Equal("someValue", modelState[key].Value.AttemptedValue);
-            Assert.Equal("someValue", modelState[key].Value.RawValue);
+            Assert.Equal("someValue", modelState[key].OriginalValue);
+            Assert.Equal("someValue", modelState[key].Value);
             Assert.Empty(modelState[key].Errors);
             Assert.Equal(ModelValidationState.Valid, modelState[key].ValidationState);
         }
@@ -202,8 +202,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
 
             var entry = modelState[key];
             Assert.NotNull(entry.Value);
-            Assert.Equal("abcd", entry.Value.AttemptedValue);
-            Assert.Equal("abcd", entry.Value.RawValue);
+            Assert.Equal("abcd", entry.OriginalValue);
+            Assert.Equal("abcd", entry.Value);
             Assert.Equal(ModelValidationState.Invalid, entry.ValidationState);
 
             var error = Assert.Single(entry.Errors);
@@ -247,8 +247,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.False(modelState.IsValid);
             var key = Assert.Single(modelState.Keys);
             Assert.Equal("Parameter1", key);
-            Assert.Equal(string.Empty, modelState[key].Value.AttemptedValue);
-            Assert.Equal(string.Empty, modelState[key].Value.RawValue);
+            Assert.Equal(string.Empty, modelState[key].OriginalValue);
+            Assert.Null(modelState[key].Value);
             var error = Assert.Single(modelState[key].Errors);
             Assert.Equal(error.ErrorMessage, "The value '' is invalid.", StringComparer.Ordinal);
             Assert.Null(error.Exception);
@@ -292,8 +292,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.True(modelState.IsValid);
             var key = Assert.Single(modelState.Keys);
             Assert.Equal("Parameter1", key);
-            Assert.Equal(string.Empty, modelState[key].Value.AttemptedValue);
-            Assert.Equal(string.Empty, modelState[key].Value.RawValue);
+            Assert.Equal(string.Empty, modelState[key].OriginalValue);
+            Assert.Equal(string.Empty, modelState[key].Value);
             Assert.Empty(modelState[key].Errors);
         }
 
@@ -393,10 +393,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.NotNull(entry);
             Assert.Empty(entry.Errors);
             Assert.Equal(ModelValidationState.Valid, entry.ValidationState);
-            var result = entry.Value;
-            Assert.NotNull(result);
-            Assert.Equal("line 1,line 2", result.AttemptedValue);
-            Assert.Equal(new[] { "line 1", "line 2" }, result.RawValue);
+            Assert.Equal("line 1,line 2", entry.OriginalValue);
+            Assert.Equal(new[] { "line 1", "line 2" }, entry.Value);
         }
 
         private class Person

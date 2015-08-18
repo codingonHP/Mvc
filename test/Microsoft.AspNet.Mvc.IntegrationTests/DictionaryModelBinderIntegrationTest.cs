@@ -45,12 +45,12 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.True(modelState.IsValid);
 
             var entry = Assert.Single(modelState, kvp => kvp.Key == "parameter[0].Key").Value;
-            Assert.Equal("key0", entry.Value.AttemptedValue);
-            Assert.Equal("key0", entry.Value.RawValue);
+            Assert.Equal("key0", entry.OriginalValue);
+            Assert.Equal("key0", entry.Value);
 
             entry = Assert.Single(modelState, kvp => kvp.Key == "parameter[0].Value").Value;
-            Assert.Equal("10", entry.Value.AttemptedValue);
-            Assert.Equal("10", entry.Value.RawValue);
+            Assert.Equal("10", entry.OriginalValue);
+            Assert.Equal(10, entry.Value);
         }
 
         [Fact]
@@ -87,8 +87,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             var kvp = Assert.Single(modelState);
             Assert.Equal("parameter[key0]", kvp.Key);
             var entry = kvp.Value;
-            Assert.Equal("10", entry.Value.AttemptedValue);
-            Assert.Equal("10", entry.Value.RawValue);
+            Assert.Equal("10", entry.OriginalValue);
+            Assert.Equal(10, entry.Value);
         }
 
         [Theory]

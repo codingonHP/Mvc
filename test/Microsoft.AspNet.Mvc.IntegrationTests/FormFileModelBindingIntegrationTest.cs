@@ -122,8 +122,8 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
             Assert.Equal("CustomParameter", entry.Key);
             Assert.Empty(entry.Value.Errors);
             Assert.Equal(ModelValidationState.Skipped, entry.Value.ValidationState);
-            Assert.Null(entry.Value.Value.AttemptedValue);
-            Assert.Equal(file, entry.Value.Value.RawValue);
+            Assert.Null(entry.Value.OriginalValue);
+            Assert.Equal(file, entry.Value.Value);
         }
 
         [Fact]

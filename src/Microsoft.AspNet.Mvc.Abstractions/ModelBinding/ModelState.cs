@@ -5,14 +5,11 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
 {
     public class ModelState
     {
-        private readonly ModelErrorCollection _errors = new ModelErrorCollection();
+        public string OriginalValue { get; set; }
 
-        public ValueProviderResult Value { get; set; }
+        public object Value { get; set; }
 
-        public ModelErrorCollection Errors
-        {
-            get { return _errors; }
-        }
+        public ModelErrorCollection Errors { get; } = new ModelErrorCollection();
 
         public ModelValidationState ValidationState { get; set; }
     }

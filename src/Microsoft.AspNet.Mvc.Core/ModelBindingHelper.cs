@@ -479,16 +479,6 @@ namespace Microsoft.AspNet.Mvc
             return (model is TModel) ? (TModel)model : default(TModel);
         }
 
-        internal static void ReplaceEmptyStringWithNull(ModelMetadata modelMetadata, ref object model)
-        {
-            if (model is string &&
-                modelMetadata.ConvertEmptyStringToNull &&
-                string.IsNullOrWhiteSpace(model as string))
-            {
-                model = null;
-            }
-        }
-
         public static object ConvertValuesToCollectionType<T>(Type modelType, IList<T> values)
         {
             // There's a limited set of collection types we can support here.

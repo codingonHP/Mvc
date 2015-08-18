@@ -64,9 +64,8 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
                     // system to skip other model binders and never to fall back.
                     return new ModelBindingResult(modelBindingKey);
                 }
-
-                var valueProviderResult = new ValueProviderResult(rawValue: model);
-                bindingContext.ModelState.SetModelValue(modelBindingKey, valueProviderResult);
+                
+                bindingContext.ModelState.SetModelValue(modelBindingKey, model, originalValue: null);
 
                 var validationNode = new ModelValidationNode(modelBindingKey, bindingContext.ModelMetadata, model)
                 {
