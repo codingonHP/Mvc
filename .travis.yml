@@ -2,5 +2,8 @@ language: csharp
 sudo: false
 mono:
   - alpha
+os:
+  - linux
+  - osx
 script:
   - ./build.sh --quiet verify
