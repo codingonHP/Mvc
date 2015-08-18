@@ -34,16 +34,20 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             if (!tagHelperOutput.Attributes.ContainsName(attributeName))
             {
                 var copiedAttribute = false;
+
+                // We iterate context.AllAttributes backwards since we prioritize TagHelperOutput values occurring
+                // before the current context.AllAttribtes[i].
                 for (var i = context.AllAttributes.Count - 1; i >= 0; i--)
                 {
-                    // We look for the original attribute so we can restore the exact attribute name the user typed.
+                    // We look for the original attribute so we can restore the exact attribute name the user typed in
+                    // approximately the same position where the user wrote it in the Razor source.
                     // Approach also ignores changes made to tagHelperOutput[attributeName].
                     if (string.Equals(
                         attributeName,
                         context.AllAttributes[i].Name,
                         StringComparison.OrdinalIgnoreCase))
                     {
-                        CopyHtmlAttributeMaintainOrder(i, tagHelperOutput, context);
+                        CopyHtmlAttribute(i, tagHelperOutput, context);
                         copiedAttribute = true;
                     }
                 }
@@ -107,7 +111,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             }
         }
 
-        private static void CopyHtmlAttributeMaintainOrder(
+        private static void CopyHtmlAttribute(
             int allAttributeIndex,
             TagHelperOutput tagHelperOutput,
             TagHelperContext context)
@@ -120,32 +124,28 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                 Minimized = existingAttribute.Minimized
             };
 
+            // Move backwards through context.AllAttributes from the provided index until we find a familiar attribute
+            // in tagHelperOutput where we can insert the copied value in front of.
             for (var i = allAttributeIndex - 1; i >= 0; i--)
             {
-                // Move backwards through context.AllAttributes from the provided index until we find a familiar
-                // attribute in tagHelperOutput where we can insert the copied value in front of.
-                var previousAllAttributeName = context.AllAttributes[i].Name;
-                if (TryFindNameAndInsertAttribute(
-                    previousAllAttributeName,
-                    insertOffset: 1,
-                    attributeToInsert: copiedAttribute,
-                    attributes: tagHelperOutput.Attributes))
+                var previouName = context.AllAttributes[i].Name;
+                var index = IndexOfFirstMatch(previouName, tagHelperOutput.Attributes);
+                if (index != -1)
                 {
+                    tagHelperOutput.Attributes.Insert(index + 1, copiedAttribute);
                     return;
                 }
             }
 
+            // Move forward through context.AllAttributes from the provided index until we find a familiar attribute in
+            // tagHelperOutput where we can insert the copied value.
             for (var i = allAttributeIndex + 1; i < context.AllAttributes.Count; i++)
             {
-                // Move forward through context.AllAttributes from the provided index until we find a familiar
-                // attribute in tagHelperOutput where we can insert the copied value.
-                var nextAllAttributeName = context.AllAttributes[i].Name;
-                if (TryFindNameAndInsertAttribute(
-                    nextAllAttributeName,
-                    insertOffset: 0,
-                    attributeToInsert: copiedAttribute,
-                    attributes: tagHelperOutput.Attributes))
+                var nextName = context.AllAttributes[i].Name;
+                var index = IndexOfFirstMatch(nextName, tagHelperOutput.Attributes);
+                if (index != -1)
                 {
+                    tagHelperOutput.Attributes.Insert(index, copiedAttribute);
                     return;
                 }
             }
@@ -154,22 +154,17 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             tagHelperOutput.Attributes.Add(copiedAttribute);
         }
 
-        private static bool TryFindNameAndInsertAttribute(
-            string name,
-            int insertOffset,
-            TagHelperAttribute attributeToInsert,
-            TagHelperAttributeList attributes)
+        private static int IndexOfFirstMatch(string name, TagHelperAttributeList attributes)
         {
-            for (var j = 0; j < attributes.Count; j++)
+            for (var i = 0; i < attributes.Count; i++)
             {
-                if (string.Equals(name, attributes[j].Name, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(name, attributes[i].Name, StringComparison.OrdinalIgnoreCase))
                 {
-                    attributes.Insert(j + insertOffset, attributeToInsert);
-                    return true;
+                    return i;
                 }
             }
 
-            return false;
+            return -1;
         }
     }
 }
