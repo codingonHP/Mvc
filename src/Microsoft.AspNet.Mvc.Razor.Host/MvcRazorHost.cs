@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 #if NET45
 using Microsoft.AspNet.FileProviders;
 #endif
@@ -224,6 +225,15 @@ namespace Microsoft.AspNet.Mvc.Razor
             }
         }
 
+        public IReadOnlyList<ChunkTreeResult> GetInheritedChunkTreeResults(string sourceFileName)
+        {
+            // Need the normalized path to resolve inherited chunks only. Full paths are needed for generated Razor
+            // files checksum and line pragmas to enable DesignTime debugging.
+            var normalizedPath = _pathNormalizer.NormalizePath(sourceFileName);
+
+            return ChunkInheritanceUtility.GetInheritedChunkTreeResults(normalizedPath);
+        }
+
         /// <inheritdoc />
         public GeneratorResults GenerateCode(string rootRelativePath, Stream inputStream)
         {
@@ -236,9 +246,8 @@ namespace Microsoft.AspNet.Mvc.Razor
         /// <inheritdoc />
         public override RazorParser DecorateRazorParser([NotNull] RazorParser razorParser, string sourceFileName)
         {
-            sourceFileName = _pathNormalizer.NormalizePath(sourceFileName);
+            var inheritedChunkTrees = GetInheritedChunkTrees(sourceFileName);
 
-            var inheritedChunkTrees = ChunkInheritanceUtility.GetInheritedChunkTrees(sourceFileName);
             return new MvcRazorParser(razorParser, inheritedChunkTrees, DefaultInheritedChunks, ModelExpressionType);
         }
 
@@ -253,14 +262,11 @@ namespace Microsoft.AspNet.Mvc.Razor
             [NotNull] CodeGenerator incomingGenerator,
             [NotNull] CodeGeneratorContext context)
         {
-            // Need the normalized path to resolve inherited chunks only. Full paths are needed for generated Razor
-            // files checksum and line pragmas to enable DesignTime debugging.
-            var normalizedPath = _pathNormalizer.NormalizePath(context.SourceFile);
-            var inheritedChunks = ChunkInheritanceUtility.GetInheritedChunkTrees(normalizedPath);
+            var inheritedChunkTrees = GetInheritedChunkTrees(context.SourceFile);
 
             ChunkInheritanceUtility.MergeInheritedChunkTrees(
                 context.ChunkTreeBuilder.ChunkTree,
-                inheritedChunks,
+                inheritedChunkTrees,
                 DefaultModel);
 
             return new MvcCSharpCodeGenerator(
@@ -272,6 +278,15 @@ namespace Microsoft.AspNet.Mvc.Razor
                     ModelExpressionTypeName = ModelExpressionType,
                     CreateModelExpressionMethodName = CreateModelExpressionMethod
                 });
+        }
+
+        private IReadOnlyList<ChunkTree> GetInheritedChunkTrees(string sourceFileName)
+        {
+            var inheritedChunkTrees = GetInheritedChunkTreeResults(sourceFileName)
+                .Select(result => result.ChunkTree)
+                .ToList();
+
+            return inheritedChunkTrees;
         }
     }
 }
